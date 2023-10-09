@@ -72,12 +72,6 @@ with krops1:
 with krops2:
     dept = st.selectbox('Department', options=OKRS[OKRS['Objective']==obj]['Department'].unique())
 
-kr1, kr2 = st.columns([1,4])
-with kr1:
-    st.write('Lorem ipsum')
-with kr2:
-    st.write('Lorem ipsum')
-
 KR = OKRS[(OKRS['Department']==dept) & (OKRS['Objective']==obj)]
 cols = ['Key Results','Tasks','Progress']
 
