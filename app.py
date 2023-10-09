@@ -9,8 +9,19 @@ ICON = Image.open('img/icon.ico')
 LOGO = Image.open("img/logo.png")
 NOW = datetime.now().strftime("%d-%b-%Y %H:%M:%S")
 
+st.set_page_config(
+    page_title='Achivo Quest',
+    layout='wide',
+    page_icon=ICON
+)
+
 # Dataset
-OKRS = pd.read_csv('https://docs.google.com/spreadsheets/d/e/2PACX-1vRb9wWxkjM9Hkv2n8z8A9YU2WpSp7_C0Ge46TN-uCwQcoHSziamAdGh8y56sKrIUkybNwi7AV-Jam39/pub?gid=1548015023&single=true&output=csv')
+@st.cache_data
+def get_df():
+    return pd.read_csv('https://docs.google.com/spreadsheets/d/e/2PACX-1vRb9wWxkjM9Hkv2n8z8A9YU2WpSp7_C0Ge46TN-uCwQcoHSziamAdGh8y56sKrIUkybNwi7AV-Jam39/pub?gid=1548015023&single=true&output=csv')
+
+OKRS = get_df()
+
 OBJECTIVES = pd.pivot_table(
     data=OKRS,
     index='Objective',
@@ -30,14 +41,6 @@ PERFORMANCE['Progress'] = PERFORMANCE['Weight'] / PERFORMANCE['Sprint Point']
 PERFORMANCE.sort_values(by='Progress', ascending=False, inplace=True)
 PERFORMANCE = PERFORMANCE[['Department','Progress']]
 
-# FUNCTIONS
-
-st.set_page_config(
-    page_title='Achivo Quest',
-    layout='wide',
-    page_icon=ICON
-)
-
 # HEADER
 head1, head2 = st.columns(2)
 with head1:
@@ -46,18 +49,12 @@ with head2:
     st.markdown(f'<h4 style="text-align: right;">{NOW}</h4>', unsafe_allow_html=True)
 
 # METRICS
-m1, m2 = st.columns(2)
+m1, m2 = st.columns([1,4])
 with m1:
     overall = OKRS['Weight'].sum()/OKRS['Sprint Point'].sum()*100.0
     st.metric('Overall achievement', f'{overall:.2f}%')
 with m2:
-    st.metric('Confidence', '100%')
-
-
-# OBJECTIVE PROGRESS
-st.markdown('#### Objectives')
-
-st.dataframe(
+    st.dataframe(
     OBJECTIVES,
     column_config={
         'Progress':st.column_config.ProgressColumn(
@@ -68,7 +65,9 @@ st.dataframe(
     },
     use_container_width=True,
     hide_index=True
-)
+    )
+
+# OBJECTIVE PROGRESS
 
 st.markdown('#### Key Results')
 krops1, krops2 = st.columns(2)
