@@ -74,7 +74,7 @@ with krops2:
 
 kr1, kr2 = st.columns([1,4])
 with kr1:
-    hc.info_card(title='Objective Progress',content='All good', sentiment='good', bar_value=77)
+    st.write('Lorem ipsum')
 with kr2:
     st.write('Lorem ipsum')
 
