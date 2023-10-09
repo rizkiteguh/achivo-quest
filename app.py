@@ -18,7 +18,8 @@ st.set_page_config(
 # Dataset
 @st.cache_data
 def get_df():
-    return pd.read_csv('https://docs.google.com/spreadsheets/d/e/2PACX-1vRb9wWxkjM9Hkv2n8z8A9YU2WpSp7_C0Ge46TN-uCwQcoHSziamAdGh8y56sKrIUkybNwi7AV-Jam39/pub?gid=1548015023&single=true&output=csv')
+    df = pd.read_csv('https://docs.google.com/spreadsheets/d/e/2PACX-1vRb9wWxkjM9Hkv2n8z8A9YU2WpSp7_C0Ge46TN-uCwQcoHSziamAdGh8y56sKrIUkybNwi7AV-Jam39/pub?gid=1548015023&single=true&output=csv')
+    return df
 
 OKRS = get_df()
 
@@ -44,7 +45,7 @@ PERFORMANCE = PERFORMANCE[['Department','Progress']]
 # HEADER
 head1, head2 = st.columns(2)
 with head1:
-    st.markdown('## Achivo Quest')
+    st.markdown('## Achivo Quest: Central Dashboard')
 with head2:
     st.markdown(f'<h4 style="text-align: right;">{NOW}</h4>', unsafe_allow_html=True)
 
@@ -76,8 +77,8 @@ with krops1:
 with krops2:
     dept = st.selectbox('Department', options=OKRS[OKRS['Objective']==obj]['Department'].unique())
 
-KR = OKRS[(OKRS['Department']==dept) & (OKRS['Objective']==obj)]
-cols = ['Key Results','Tasks','Progress']
+KR = OKRS[(OKRS['Department']==dept) & (OKRS['Objective']==obj)].sort_values(by='Sprint Point', ascending=False)
+cols = ['Tasks','Sprint Point','Start Date','End Date','Progress']
 
 st.dataframe(
     KR[cols],
