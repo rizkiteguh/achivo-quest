@@ -14,16 +14,23 @@ OKRS = pd.read_csv('https://docs.google.com/spreadsheets/d/e/2PACX-1vRb9wWxkjM9H
 OBJECTIVES = pd.pivot_table(
     data=OKRS,
     index='Objective',
-    values='Progress',
-    aggfunc='mean'
+    values=['Sprint Point','Weight'],
+    aggfunc='sum'
 ).reset_index()
+OBJECTIVES['Progress'] = OBJECTIVES['Weight'] / OBJECTIVES['Sprint Point']
+OBJECTIVES = OBJECTIVES[['Objective','Progress']]
 
 PERFORMANCE = pd.pivot_table(
     data=OKRS,
     index='Department',
-    values='Progress',
-    aggfunc='mean'
-).reset_index().sort_values(by='Progress', ascending=False)
+    values=['Sprint Point','Weight'],
+    aggfunc='sum'
+).reset_index()
+PERFORMANCE['Progress'] = PERFORMANCE['Weight'] / PERFORMANCE['Sprint Point']
+PERFORMANCE.sort_values(by='Progress', ascending=False, inplace=True)
+PERFORMANCE = PERFORMANCE[['Department','Progress']]
+
+# FUNCTIONS
 
 st.set_page_config(
     page_title='Achivo Quest',
@@ -39,15 +46,13 @@ with head2:
     st.markdown(f'<h4 style="text-align: right;">{NOW}</h4>', unsafe_allow_html=True)
 
 # METRICS
-m1, m2, m3, m4 = st.columns(4)
+m1, m2 = st.columns(2)
 with m1:
-    st.metric('Overall achievement', '100%')
+    overall = OKRS['Weight'].sum()/OKRS['Sprint Point'].sum()*100.0
+    st.metric('Overall achievement', f'{overall:.2f}%')
 with m2:
-    st.metric('Metric 2', 100)
-with m3:
-    st.metric('Metric 3', 100)
-with m4:
-    st.metric('Confidence score', '100%')
+    st.metric('Confidence', '100%')
+
 
 # OBJECTIVE PROGRESS
 st.markdown('#### Objectives')
@@ -77,6 +82,13 @@ cols = ['Key Results','Tasks','Progress']
 
 st.dataframe(
     KR[cols],
+    column_config={
+        'Progress':st.column_config.ProgressColumn(
+            'Progress',
+            min_value=0,
+            max_value=1
+        )
+    },
     use_container_width=True,
     hide_index=True
 )
