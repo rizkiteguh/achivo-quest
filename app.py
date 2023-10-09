@@ -3,7 +3,6 @@ import pandas as pd
 from PIL import Image
 import altair as alt
 from datetime import date, datetime
-import hydralit_components as hc
 
 # Assets
 ICON = Image.open('img/icon.ico')
