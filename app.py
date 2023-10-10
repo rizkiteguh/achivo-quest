@@ -9,6 +9,11 @@ import math
 ICON = Image.open('img/icon.ico')
 LOGO = Image.open("img/logo.png")
 NOW = date(2023,12,8)
+START_DATE = date(2023,10,1)
+END_DATE = date(2023,12,31)
+ELAPSED_TIME = NOW - START_DATE
+LENGTH = END_DATE - START_DATE
+PROGRESS = ELAPSED_TIME/LENGTH*100.0
 
 st.set_page_config(
     page_title='Achivo Quest',
@@ -62,24 +67,33 @@ realized = float(salary_df['Value Realized'].sum())
 
 salary_df.drop(columns=['Weight','Salary Quarterly'], inplace=True)
 
+# Confidence Score
+overall = OKRS['Weight'].sum()/OKRS['Sprint Point'].sum()*100.0
+CONFIDENCE = 100 - (PROGRESS - overall)
+
 # HEADER
 head1, head2 = st.columns(2)
 with head1:
     st.markdown('## Achivo Quest: Central Dashboard')
 with head2:
-    st.markdown(f'<h2 style="text-align: right;">Q{math.ceil(NOW.month/3)} {NOW.year}</h2>', unsafe_allow_html=True)
+    st.markdown(f'<h2 style="text-align: right;">Q{math.ceil(NOW.month/3)} {NOW.year} ({ELAPSED_TIME.days} days left)</h2>', unsafe_allow_html=True)
 
 # METRICS
 m1, m2 = st.columns([1,4])
 with m1:
-    overall = OKRS['Weight'].sum()/OKRS['Sprint Point'].sum()*100.0
     st.metric('Overall achievement', f'{overall:.2f}%')
+
+    st.metric(
+        'Confidence score',
+        f'{CONFIDENCE:.2f}%'
+    )
 
     st.metric(
         'Salary utilization', 
         f'{numerize.numerize(realized)} IDR', 
         f'{numerize.numerize(realized-cost)} IDR',
-        delta_color='normal',)
+        delta_color='normal')
+
 with m2:
     st.dataframe(
     OBJECTIVES,
