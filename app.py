@@ -3,11 +3,12 @@ import pandas as pd
 from PIL import Image
 from datetime import date, datetime
 from numerize import numerize
+import math
 
 # Assets
 ICON = Image.open('img/icon.ico')
 LOGO = Image.open("img/logo.png")
-NOW = date(2023,12,8).strftime("%d-%B-%Y")
+NOW = date(2023,12,8)
 
 st.set_page_config(
     page_title='Achivo Quest',
@@ -66,7 +67,7 @@ head1, head2 = st.columns(2)
 with head1:
     st.markdown('## Achivo Quest: Central Dashboard')
 with head2:
-    st.markdown(f'<h2 style="text-align: right;">{NOW}</h2>', unsafe_allow_html=True)
+    st.markdown(f'<h2 style="text-align: right;">Q{math.ceil(NOW.month/3)} {NOW.year}</h2>', unsafe_allow_html=True)
 
 # METRICS
 m1, m2 = st.columns([1,4])
