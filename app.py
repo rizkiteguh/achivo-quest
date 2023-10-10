@@ -75,7 +75,7 @@ with m1:
     st.metric('Overall achievement', f'{overall:.2f}%')
 
     st.metric(
-        'Utilization', 
+        'Salary utilization', 
         f'{numerize.numerize(realized)} IDR', 
         f'{numerize.numerize(realized-cost)} IDR',
         delta_color='normal',)
