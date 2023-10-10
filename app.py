@@ -22,12 +22,7 @@ st.set_page_config(
 )
 
 # Dataset
-@st.cache_data
-def get_df():
-    df = pd.read_csv('https://docs.google.com/spreadsheets/d/e/2PACX-1vRb9wWxkjM9Hkv2n8z8A9YU2WpSp7_C0Ge46TN-uCwQcoHSziamAdGh8y56sKrIUkybNwi7AV-Jam39/pub?gid=1548015023&single=true&output=csv')
-    return df
-
-OKRS = get_df()
+OKRS = pd.read_csv('https://docs.google.com/spreadsheets/d/e/2PACX-1vRb9wWxkjM9Hkv2n8z8A9YU2WpSp7_C0Ge46TN-uCwQcoHSziamAdGh8y56sKrIUkybNwi7AV-Jam39/pub?gid=1548015023&single=true&output=csv')
 
 OBJECTIVES = pd.pivot_table(
     data=OKRS,
@@ -37,16 +32,6 @@ OBJECTIVES = pd.pivot_table(
 ).reset_index()
 OBJECTIVES['Progress'] = OBJECTIVES['Weight'] / OBJECTIVES['Sprint Point']
 OBJECTIVES = OBJECTIVES[['Objective','Progress']]
-
-PERFORMANCE = pd.pivot_table(
-    data=OKRS,
-    index='Department',
-    values=['Sprint Point','Weight'],
-    aggfunc='sum'
-).reset_index()
-PERFORMANCE['Progress'] = PERFORMANCE['Weight'] / PERFORMANCE['Sprint Point']
-PERFORMANCE.sort_values(by='Progress', ascending=False, inplace=True)
-PERFORMANCE = PERFORMANCE[['Department','Progress']]
 
 salary_df = pd.pivot_table(
         data=OKRS,
@@ -64,6 +49,26 @@ salary_df['Value Realized'] = salary_df['Utilization'] * salary_df['Salary Quart
 
 cost = float(salary_df['Salary Quarterly'].sum())
 realized = float(salary_df['Value Realized'].sum())
+
+PERFORMANCE = pd.pivot_table(
+    data=OKRS,
+    index='Department',
+    values=['Sprint Point','Weight'],
+    aggfunc='sum'
+).reset_index()
+PERFORMANCE['Progress'] = PERFORMANCE['Weight'] / PERFORMANCE['Sprint Point']
+PERFORMANCE.sort_values(by='Progress', ascending=False, inplace=True)
+PERFORMANCE = PERFORMANCE[['Department','Progress']]
+
+salary_per_dept = pd.pivot_table(
+    data=salary_df,
+    index='Department',
+    values='Salary Quarterly',
+    aggfunc='sum'
+).reset_index()
+
+PERFORMANCE = pd.merge(left=PERFORMANCE, right= salary_per_dept, how='left')
+PERFORMANCE['Value Realized'] = PERFORMANCE['Salary Quarterly'] * PERFORMANCE['Progress']
 
 salary_df.drop(columns=['Weight','Salary Quarterly'], inplace=True)
 
