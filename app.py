@@ -69,6 +69,7 @@ salary_per_dept = pd.pivot_table(
 
 PERFORMANCE = pd.merge(left=PERFORMANCE, right= salary_per_dept, how='left')
 PERFORMANCE['Value Realized'] = PERFORMANCE['Salary Quarterly'] * PERFORMANCE['Progress']
+PERFORMANCE.rename(columns={'Salary Quarterly':'Budget'}, inplace=True)
 
 salary_df.drop(columns=['Weight','Salary Quarterly'], inplace=True)
 
